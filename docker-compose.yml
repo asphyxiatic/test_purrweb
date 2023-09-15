@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  postgres_hap_easy:
+    image: postgres:latest
+    container_name: test_purrweb
+    restart: always
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./tmp/pg:/var/lib/postgresql/data
+    env_file:
+      - docker.env
+    networks:
+      - postgres
+  
+  pg_adminer:
+    image: adminer
+    container_name: adminer_test_purrweb
+    restart: always
+    ports:
+      - "8081:8080"
+    env_file:
+      - docker.env
+    networks:
+      - postgres
+
+networks:
+  postgres:
+    driver: bridge
