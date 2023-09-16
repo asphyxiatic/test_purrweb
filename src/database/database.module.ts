@@ -11,7 +11,7 @@ import { DataSource, DataSourceOptions } from 'typeorm';
         options?: DataSourceOptions,
       ): Promise<DataSource> => {
         if (!options) {
-          throw new Error('🚨 Options for connecting to undefined database!!!');
+          throw new Error('🚨 options for connecting to undefined database!!!');
         }
         const dataSource = new DataSource(options).initialize();
 
