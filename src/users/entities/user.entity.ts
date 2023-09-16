@@ -1,5 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column as Col,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Relation,
+} from 'typeorm';
 import { BaseEntity } from '../../common/entities/base.entity.js';
+import { Column } from '../../columns/entities/column.entity.js';
 
 const tableName = 'users';
 
@@ -8,9 +15,12 @@ export class User extends BaseEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ type: 'varchar' })
+  @Col({ type: 'varchar' })
   email!: string;
 
-  @Column({ type: 'varchar' })
+  @Col({ type: 'varchar' })
   password!: string;
+
+  @OneToMany(() => Column, (column) => column.user)
+  columns!: Relation<Column[]>;
 }
