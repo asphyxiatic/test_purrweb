@@ -9,10 +9,10 @@ import { JwtToolsService } from '../../jwt/services/jwt-tools.service.js';
 import { JwtTokenPayload } from '../interfaces/token-payload.interface.js';
 import { config } from '../../config/config.js';
 import { SignOutResponseDto } from '../dto/sign-out-response.dto.js';
-import { CreateUserOptions } from '../../users/interfaces/create-user-options.interface.js';
 import { SignOutDto } from '../dto/sign-out.dto.js';
 import { SignInResponseDto } from '../dto/sign-in-response.dto.js';
 import { SignInDto } from '../dto/sign-in.dto.js';
+import { CreateUserDto } from '../../users/dto/create-user.dto.js';
 
 @Injectable()
 export class AuthService {
@@ -37,7 +37,7 @@ export class AuthService {
 
     const hashedPassword = bcrypt.hashSync(password, this.saltRounds);
 
-    const newUserOptions: CreateUserOptions = {
+    const newUserOptions: CreateUserDto = {
       email: email,
       password: hashedPassword,
     };
