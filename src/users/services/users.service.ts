@@ -17,6 +17,9 @@ import { UpdateCardDto } from '../../cards/dto/update-card.dto.js';
 import { UpdateColumnDto } from '../../columns/dto/update-column.dto.js';
 import { UpdateCommentDto } from '../../comments/dto/update-comment.dto.js';
 import { CreateUserDto } from '../dto/create-user.dto.js';
+import { CreateColumnDto } from '../../columns/dto/create-column.dto.js';
+import { CreateCardDto } from '../../cards/dto/create-card.dto.js';
+import { CreateCommentDto } from '../../comments/dto/create-comment.dto.js';
 
 @Injectable()
 export class UsersService {
@@ -39,6 +42,48 @@ export class UsersService {
   //------------------------------------------------------------------
   public async create(options: CreateUserDto): Promise<User> {
     return this.userRepository.save(options);
+  }
+
+  //------------------------------------------------------------------
+  public async createColumnForUser(
+    userId: string,
+    body: CreateColumnDto,
+  ): Promise<Column> {
+    return this.columnsService.create(userId, body);
+  }
+
+  //------------------------------------------------------------------
+  public async createCardForUserColumn(
+    userId: string,
+    columnId: string,
+    body: CreateCardDto,
+  ): Promise<Card> {
+    const column = await this.columnsService.findOneFor({
+      id: columnId,
+      userId: userId,
+    });
+
+    return this.cardsService.create(column.id, body);
+  }
+
+  //------------------------------------------------------------------
+  public async createCommentForUserCard(
+    userId: string,
+    columnId: string,
+    cardId: string,
+    body: CreateCommentDto,
+  ): Promise<Comment> {
+    const column = await this.columnsService.findOneFor({
+      id: columnId,
+      userId: userId,
+    });
+
+    const card = await this.cardsService.findOneFor({
+      id: cardId,
+      columnId: column.id,
+    });
+
+    return this.commentsService.create(card.id, body);
   }
 
   //------------------------------------------------------------------

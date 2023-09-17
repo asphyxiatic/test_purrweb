@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Delete,
-  Get,
   Param,
   ParseUUIDPipe,
   Patch,
@@ -18,89 +17,50 @@ import { UpdateCardDto } from '../../cards/dto/update-card.dto.js';
 import { UpdateColumnDto } from '../../columns/dto/update-column.dto.js';
 import { UpdateCommentDto } from '../../comments/dto/update-comment.dto.js';
 import { CreateUserDto } from '../dto/create-user.dto.js';
+import { CreateColumnDto } from '../../columns/dto/create-column.dto.js';
+import { CreateCardDto } from '../../cards/dto/create-card.dto.js';
+import { CreateCommentDto } from '../../comments/dto/create-comment.dto.js';
 
 @Controller('users')
-export class UsersController {
+export class UsersWriteController {
   constructor(private readonly userService: UsersService) {}
 
   // Create
   // ---------------------------------------------------------------------------
   @Post()
-  async createUser(body: CreateUserDto): Promise<User> {
+  async createUser(@Body() body: CreateUserDto): Promise<User> {
     return this.userService.create(body);
   }
 
-  // Read
-  // ---------------------------------------------------------------------------
-  @Get()
-  async getManyUsers(): Promise<User[]> {
-    return this.userService.getManyUsers();
-  }
-
-  @Get(':userId')
-  async getOneUser(
+  @Post(':userId/columns')
+  async createColumnForUser(
     @Param('userId', ParseUUIDPipe) userId: string,
-  ): Promise<User> {
-    return this.userService.getOneUser(userId);
-  }
-
-  @Get(':userId/columns')
-  async getManyColumnsForUser(
-    @Param('userId', ParseUUIDPipe) userId: string,
-  ): Promise<Column[]> {
-    return this.userService.getManyColumnsForUser(userId);
-  }
-
-  @Get(':userId/columns/:columnId')
-  async getOneColumnForUser(
-    @Param('userId', ParseUUIDPipe) userId: string,
-    @Param('columnId', ParseUUIDPipe) columnId: string,
+    @Body() body: CreateColumnDto,
   ): Promise<Column> {
-    return this.userService.getOneColumnForUser(userId, columnId);
+    return this.userService.createColumnForUser(userId, body);
   }
 
-  @Get(':userId/columns/:columnId/cards')
-  async getManyCardsForUserColumn(
+  @Post(':userId/columns/:columnId/cards')
+  async createCardForUserColumn(
     @Param('userId', ParseUUIDPipe) userId: string,
     @Param('columnId', ParseUUIDPipe) columnId: string,
-  ): Promise<Card[]> {
-    return this.userService.getManyCardsForUserColumn(userId, columnId);
-  }
-
-  @Get(':userId/columns/:columnId/cards/:cardId')
-  async getOneCardForUserColumn(
-    @Param('userId', ParseUUIDPipe) userId: string,
-    @Param('columnId', ParseUUIDPipe) columnId: string,
-    @Param('cardId', ParseUUIDPipe) cardId: string,
+    @Body() body: CreateCardDto,
   ): Promise<Card> {
-    return this.userService.getOneCardForUserColumn(userId, columnId, cardId);
+    return this.userService.createCardForUserColumn(userId, columnId, body);
   }
 
-  @Get(':userId/columns/:columnId/cards/:cardId/comments')
-  async getManyCommentsForUserCard(
+  @Post(':userId/columns/:columnId/cards/:cardId/comments')
+  async createCommentForUserCard(
     @Param('userId', ParseUUIDPipe) userId: string,
     @Param('columnId', ParseUUIDPipe) columnId: string,
     @Param('cardId', ParseUUIDPipe) cardId: string,
-  ): Promise<Comment[]> {
-    return this.userService.getManyCommentsForUserCard(
-      userId,
-      columnId,
-      cardId,
-    );
-  }
-
-  @Get(':userId/columns/:columnId/cards/:cardId/comments/:commentId')
-  async getOneCommentForUserCard(
-    @Param('userId', ParseUUIDPipe) userId: string,
-    @Param('columnId', ParseUUIDPipe) columnId: string,
-    @Param('cardId', ParseUUIDPipe) cardId: string,
-    @Param('commentId', ParseUUIDPipe) commentId: string,
+    @Body() body: CreateCommentDto,
   ): Promise<Comment> {
-    return this.userService.getOneCommentForUserCard(
+    return this.userService.createCommentForUserCard(
       userId,
       columnId,
       cardId,
-      commentId,
+      body,
     );
   }
 
@@ -145,7 +105,7 @@ export class UsersController {
     @Param('cardId', ParseUUIDPipe) cardId: string,
     @Param('commentId', ParseUUIDPipe) commentId: string,
     @Body() body: UpdateCommentDto,
-  ) {
+  ): Promise<Comment> {
     return this.userService.updateCommentForUserCard(
       userId,
       columnId,
