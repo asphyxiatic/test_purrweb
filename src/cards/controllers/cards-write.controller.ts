@@ -19,7 +19,9 @@ import { IsCommentOwner } from '../../comments/guards/is-comment-owner.guard.js'
 import { GetCurrentUser } from '../../common/decorators/get-current-user.decorator.js';
 import { UserFromJwt } from '../../auth/interfaces/user-from-jwt.interface.js';
 import { CreateCardDto } from '../dto/create-card.dto.js';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Карточки')
 @Controller('cards')
 export class CardsWriteController {
   constructor(private readonly cardsService: CardsService) {}
@@ -27,6 +29,8 @@ export class CardsWriteController {
   // Create
   // ---------------------------------------------------------------------------
 
+  @ApiOperation({ summary: 'Создание карточки' })
+  @ApiResponse({ status: 201 })
   @Post()
   async createCard(
     @GetCurrentUser() { id }: UserFromJwt,
@@ -35,6 +39,8 @@ export class CardsWriteController {
     return this.cardsService.create(id, body.columnId, body);
   }
 
+  @ApiOperation({ summary: 'Создание комментария карточки' })
+  @ApiResponse({ status: 201 })
   @Post(':cardId/comments')
   async createCommentForCard(
     @GetCurrentUser() { id }: UserFromJwt,
@@ -46,6 +52,8 @@ export class CardsWriteController {
 
   // Update
   // ---------------------------------------------------------------------------
+  @ApiOperation({ summary: 'Обновление карточки' })
+  @ApiResponse({ status: 200 })
   @Patch(':cardId')
   @UseGuards(IsCardOwner)
   async updateCardForColumn(
@@ -55,6 +63,8 @@ export class CardsWriteController {
     return this.cardsService.update(cardId, body);
   }
 
+  @ApiOperation({ summary: 'Обновление комментария карточки' })
+  @ApiResponse({ status: 200 })
   @Patch(':cardId/comments/:commentId')
   @UseGuards(IsCommentOwner)
   async updateCommentForCard(
@@ -67,6 +77,8 @@ export class CardsWriteController {
 
   // Delete
   // ---------------------------------------------------------------------------
+  @ApiOperation({ summary: 'Удаление карточки' })
+  @ApiResponse({ status: 204 })
   @Delete(':cardId')
   @UseGuards(IsCardOwner)
   async deleteCard(
@@ -75,6 +87,8 @@ export class CardsWriteController {
     return this.cardsService.delete(cardId);
   }
 
+  @ApiOperation({ summary: 'Удаление комментария карточки' })
+  @ApiResponse({ status: 204 })
   @Delete(':cardId/comments/:commentId')
   @UseGuards(IsCommentOwner)
   async deleteCommentForCard(

@@ -23,13 +23,17 @@ import { CreateCommentDto } from '../../comments/dto/create-comment.dto.js';
 import { IsColumnOwner } from '../guards/is-column-owner.guard.js';
 import { IsCardOwner } from '../../cards/guards/is-card-owner.guard.js';
 import { IsCommentOwner } from '../../comments/guards/is-comment-owner.guard.js';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Колонки')
 @Controller('columns')
 export class ColumnsWriteController {
   constructor(private readonly columnsService: ColumnsService) {}
 
   // Create
   // ---------------------------------------------------------------------------
+  @ApiOperation({ summary: 'Создание колонки' })
+  @ApiResponse({ status: 201 })
   @Post()
   async createColumn(
     @GetCurrentUser() { id }: UserFromJwt,
@@ -38,6 +42,8 @@ export class ColumnsWriteController {
     return this.columnsService.create(id, body);
   }
 
+  @ApiOperation({ summary: 'Создание карточки колонки' })
+  @ApiResponse({ status: 201 })
   @Post(':columnId/cards')
   async createCardForColumn(
     @GetCurrentUser() { id }: UserFromJwt,
@@ -47,6 +53,8 @@ export class ColumnsWriteController {
     return this.columnsService.createCardForColumn(id, columnId, body);
   }
 
+  @ApiOperation({ summary: 'Создание комментария карточки' })
+  @ApiResponse({ status: 201 })
   @Post(':columnId/cards/:cardId/comments')
   async createCommentForCard(
     @GetCurrentUser() { id }: UserFromJwt,
@@ -59,6 +67,8 @@ export class ColumnsWriteController {
 
   // Update
   // ---------------------------------------------------------------------------
+  @ApiOperation({ summary: 'Обновление колонки' })
+  @ApiResponse({ status: 200 })
   @Patch(':columnId')
   @UseGuards(IsColumnOwner)
   async updateColumn(
@@ -68,6 +78,8 @@ export class ColumnsWriteController {
     return this.columnsService.update(columnId, body);
   }
 
+  @ApiOperation({ summary: 'Обновление карточки колонки' })
+  @ApiResponse({ status: 200 })
   @Patch(':columnId/cards/:cardId')
   @UseGuards(IsCardOwner)
   async updateCardForColumn(
@@ -78,6 +90,8 @@ export class ColumnsWriteController {
     return this.columnsService.updateCardForColumn(columnId, cardId, body);
   }
 
+  @ApiOperation({ summary: 'Обновление комментария карточки' })
+  @ApiResponse({ status: 200 })
   @Patch(':columnId/cards/:cardId/comments/:commentId')
   @UseGuards(IsCommentOwner)
   async updateCommentForCard(
@@ -96,6 +110,8 @@ export class ColumnsWriteController {
 
   // Delete
   // ---------------------------------------------------------------------------
+  @ApiOperation({ summary: 'Удаление колонки' })
+  @ApiResponse({ status: 204 })
   @Delete(':columnId')
   @UseGuards(IsColumnOwner)
   async deleteColumn(
@@ -104,6 +120,8 @@ export class ColumnsWriteController {
     return this.columnsService.delete(columnId);
   }
 
+  @ApiOperation({ summary: 'Удаление карточки колонки' })
+  @ApiResponse({ status: 204 })
   @Delete(':columnId/cards/:cardId')
   @UseGuards(IsCardOwner)
   async deleteCardForColumn(
@@ -113,6 +131,8 @@ export class ColumnsWriteController {
     return this.columnsService.deleteCardForColumn(columnId, cardId);
   }
 
+  @ApiOperation({ summary: 'Удаление комментария карточки' })
+  @ApiResponse({ status: 204 })
   @Delete(':columnId/cards/:cardId/comments/:commentId')
   @UseGuards(IsCommentOwner)
   async deleteCommentForCard(

@@ -25,18 +25,26 @@ import { IsUserOwner } from '../guards/is-user-owner.guard.js';
 import { IsColumnOwner } from '../../columns/guards/is-column-owner.guard.js';
 import { IsCardOwner } from '../../cards/guards/is-card-owner.guard.js';
 import { IsCommentOwner } from '../../comments/guards/is-comment-owner.guard.js';
+import { SkipAuth } from '../../auth/decorators/skip-auth.decorator.js';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Пользователи')
 @Controller('users')
 export class UsersWriteController {
   constructor(private readonly userService: UsersService) {}
 
   // Create
   // ---------------------------------------------------------------------------
+  @ApiOperation({ summary: 'Создание пользователя' })
+  @ApiResponse({ status: 201 })
   @Post()
+  @SkipAuth()
   async createUser(@Body() body: CreateUserDto): Promise<User> {
     return this.userService.create(body);
   }
 
+  @ApiOperation({ summary: 'Создание колонки пользователя' })
+  @ApiResponse({ status: 201 })
   @Post(':userId/columns')
   @UseGuards(IsUserOwner)
   async createColumnForUser(
@@ -46,6 +54,8 @@ export class UsersWriteController {
     return this.userService.createColumnForUser(userId, body);
   }
 
+  @ApiOperation({ summary: 'Создание карточки колонки' })
+  @ApiResponse({ status: 201 })
   @Post(':userId/columns/:columnId/cards')
   async createCardForUserColumn(
     @Param('userId', ParseUUIDPipe) userId: string,
@@ -55,6 +65,8 @@ export class UsersWriteController {
     return this.userService.createCardForUserColumn(userId, columnId, body);
   }
 
+  @ApiOperation({ summary: 'Создание комментария карточки' })
+  @ApiResponse({ status: 201 })
   @Post(':userId/columns/:columnId/cards/:cardId/comments')
   async createCommentForUserCard(
     @Param('userId', ParseUUIDPipe) userId: string,
@@ -72,6 +84,8 @@ export class UsersWriteController {
 
   // Update
   // ---------------------------------------------------------------------------
+  @ApiOperation({ summary: 'Обновление пользователя' })
+  @ApiResponse({ status: 200 })
   @Patch(':userId')
   @UseGuards(IsUserOwner)
   async updateUser(
@@ -81,6 +95,8 @@ export class UsersWriteController {
     return this.userService.updateUser(userId, body);
   }
 
+  @ApiOperation({ summary: 'Обновление колонки пользователя' })
+  @ApiResponse({ status: 200 })
   @Patch(':userId/columns/:columnId')
   @UseGuards(IsColumnOwner)
   async updateColumnForUser(
@@ -91,6 +107,8 @@ export class UsersWriteController {
     return this.userService.updateColumnForUser(userId, columnId, body);
   }
 
+  @ApiOperation({ summary: 'Обновление карточки колонки' })
+  @ApiResponse({ status: 200 })
   @Patch(':userId/columns/:columnId/cards/:cardId')
   @UseGuards(IsCardOwner)
   async updateCardForUserColumn(
@@ -107,6 +125,8 @@ export class UsersWriteController {
     );
   }
 
+  @ApiOperation({ summary: 'Обновление комментария карточки' })
+  @ApiResponse({ status: 200 })
   @Patch(':userId/columns/:columnId/cards/:cardId/comments/:commentId')
   @UseGuards(IsCommentOwner)
   async updateCommentForUserCard(
@@ -127,6 +147,8 @@ export class UsersWriteController {
 
   // Delete
   // ---------------------------------------------------------------------------
+  @ApiOperation({ summary: 'Удаление пользователя' })
+  @ApiResponse({ status: 204 })
   @Delete(':userId')
   @UseGuards(IsUserOwner)
   async deleteUser(
@@ -135,6 +157,8 @@ export class UsersWriteController {
     return this.userService.delete(userId);
   }
 
+  @ApiOperation({ summary: 'Удаление колонки пользователя' })
+  @ApiResponse({ status: 204 })
   @Delete(':userId/columns/:columnId')
   @UseGuards(IsColumnOwner)
   async deleteColumnForUser(
@@ -144,6 +168,8 @@ export class UsersWriteController {
     return this.userService.deleteColumnForUser(userId, columnId);
   }
 
+  @ApiOperation({ summary: 'Удаление карточки колонки' })
+  @ApiResponse({ status: 204 })
   @Delete(':userId/columns/:columnId/cards/:cardId')
   @UseGuards(IsCardOwner)
   async deleteCardForUserColumn(
@@ -154,6 +180,8 @@ export class UsersWriteController {
     return this.userService.deleteCardForUserColumn(userId, columnId, cardId);
   }
 
+  @ApiOperation({ summary: 'Удаление комментария карточки' })
+  @ApiResponse({ status: 204 })
   @Delete(':userId/columns/:columnId/cards/:cardId/comments/:commentId')
   @UseGuards(IsCommentOwner)
   async deleteCommentForUserCard(

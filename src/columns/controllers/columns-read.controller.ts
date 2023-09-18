@@ -5,13 +5,17 @@ import { GetCurrentUser } from '../../common/decorators/get-current-user.decorat
 import { Column } from '../entities/column.entity.js';
 import { Card } from '../../cards/entities/card.entity.js';
 import { Comment } from '../../comments/entities/comment.entity.js';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Колонки')
 @Controller('columns')
 export class ColumnsReadController {
   constructor(private readonly columnsService: ColumnsService) {}
 
   // Read
   // ---------------------------------------------------------------------------
+  @ApiOperation({ summary: 'Получение колонок пользователя' })
+  @ApiResponse({ status: 200 })
   @Get()
   async getManyColumns(
     @GetCurrentUser() { id }: UserFromJwt,
@@ -19,6 +23,8 @@ export class ColumnsReadController {
     return this.columnsService.getManyColumns(id);
   }
 
+  @ApiOperation({ summary: 'Получение колоноки пользователя' })
+  @ApiResponse({ status: 200 })
   @Get(':columnId')
   async getOneColumn(
     @Param('columnId', ParseUUIDPipe) columnId: string,
@@ -26,6 +32,8 @@ export class ColumnsReadController {
     return this.columnsService.getOneColumn(columnId);
   }
 
+  @ApiOperation({ summary: 'Получение карточек колонки' })
+  @ApiResponse({ status: 200 })
   @Get(':columnId/cards')
   async getManyCardsForColumn(
     @Param('columnId', ParseUUIDPipe) columnId: string,
@@ -33,6 +41,8 @@ export class ColumnsReadController {
     return this.columnsService.getManyCardsForColumn(columnId);
   }
 
+  @ApiOperation({ summary: 'Получение карточки колонки' })
+  @ApiResponse({ status: 200 })
   @Get(':columnId/cards/:cardId')
   async getOneCardForColumn(
     @Param('columnId', ParseUUIDPipe) columnId: string,
@@ -41,6 +51,8 @@ export class ColumnsReadController {
     return this.columnsService.getOneCardForColumn(columnId, cardId);
   }
 
+  @ApiOperation({ summary: 'Получение коментариев карточки' })
+  @ApiResponse({ status: 200 })
   @Get(':columnId/cards/:cardId/comments')
   async getManyCommentsForCard(
     @Param('columnId', ParseUUIDPipe) columnId: string,
@@ -49,6 +61,8 @@ export class ColumnsReadController {
     return this.columnsService.getManyCommentsForCard(columnId, cardId);
   }
 
+  @ApiOperation({ summary: 'Получение коментария карточки' })
+  @ApiResponse({ status: 200 })
   @Get(':columnId/cards/:cardId/comments/:commentId')
   async getOneCommentForCard(
     @Param('columnId', ParseUUIDPipe) columnId: string,

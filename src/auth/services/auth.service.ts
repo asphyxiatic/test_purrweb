@@ -8,8 +8,8 @@ import * as bcrypt from 'bcrypt';
 import { JwtToolsService } from '../../jwt/services/jwt-tools.service.js';
 import { JwtTokenPayload } from '../interfaces/token-payload.interface.js';
 import { config } from '../../config/config.js';
-import { SignOutResponseDto } from '../dto/sign-out-response.dto.js';
-import { SignOutDto } from '../dto/sign-out.dto.js';
+import { SignUpResponseDto } from '../dto/sign-up-response.dto.js';
+import { SignUpDto } from '../dto/sign-up.dto.js';
 import { SignInResponseDto } from '../dto/sign-in-response.dto.js';
 import { SignInDto } from '../dto/sign-in.dto.js';
 import { CreateUserDto } from '../../users/dto/create-user.dto.js';
@@ -25,10 +25,10 @@ export class AuthService {
   ) {}
 
   //------------------------------------------------------------------------
-  public async signOut({
+  public async signUp({
     email,
     password,
-  }: SignOutDto): Promise<SignOutResponseDto> {
+  }: SignUpDto): Promise<SignUpResponseDto> {
     const user = await this.usersService.findOneFor({ email: email });
 
     if (user) {
