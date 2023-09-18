@@ -16,7 +16,6 @@ import { CreateUserDto } from '../../users/dto/create-user.dto.js';
 
 @Injectable()
 export class AuthService {
-  private readonly saltRounds = 5;
   private readonly JWT_ACCESS_SECRET_KEY = config.JWT_ACCESS_SECRET_KEY;
 
   constructor(
@@ -35,11 +34,9 @@ export class AuthService {
       throw new BadRequestException('🚨 user is already exist!');
     }
 
-    const hashedPassword = bcrypt.hashSync(password, this.saltRounds);
-
     const newUserOptions: CreateUserDto = {
       email: email,
-      password: hashedPassword,
+      password: password,
     };
 
     const newUser = await this.usersService.create(newUserOptions);
@@ -52,7 +49,7 @@ export class AuthService {
     const accessToken = await this.jwtToolsService.createToken(
       atPayload,
       this.JWT_ACCESS_SECRET_KEY,
-      '60m',
+      '5m',
     );
 
     return { token: accessToken };

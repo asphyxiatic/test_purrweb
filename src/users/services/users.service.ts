@@ -18,9 +18,12 @@ import { CreateUserDto } from '../dto/create-user.dto.js';
 import { CreateColumnDto } from '../../columns/dto/create-column.dto.js';
 import { CreateCardDto } from '../../cards/dto/create-card.dto.js';
 import { CreateCommentDto } from '../../comments/dto/create-comment.dto.js';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
+  private readonly saltRounds = 5;
+
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -35,8 +38,16 @@ export class UsersService {
   }
 
   //------------------------------------------------------------------
-  public async create(options: CreateUserDto): Promise<User> {
-    return this.userRepository.save(options);
+  public async create(credentials: CreateUserDto): Promise<User> {
+    const hashedPassword = bcrypt.hashSync(
+      credentials.password,
+      this.saltRounds,
+    );
+
+    return this.userRepository.save({
+      ...credentials,
+      password: hashedPassword,
+    });
   }
 
   //------------------------------------------------------------------

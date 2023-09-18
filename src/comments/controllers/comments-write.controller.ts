@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -31,6 +32,10 @@ export class CommentsWriteController {
     @GetCurrentUser() { id }: UserFromJwt,
     @Body() body: CreateCommentDto,
   ) {
+    if (!body.cardId) {
+      throw new BadRequestException('🚨 invalid body request!');
+    }
+
     return this.commentsService.create(id, body.cardId, body);
   }
 

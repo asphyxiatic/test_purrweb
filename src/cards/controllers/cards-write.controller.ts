@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -36,6 +37,10 @@ export class CardsWriteController {
     @GetCurrentUser() { id }: UserFromJwt,
     @Body() body: CreateCardDto,
   ): Promise<Card> {
+    if (body.columnId) {
+      throw new BadRequestException('🚨 invalid body request!');
+    }
+
     return this.cardsService.create(id, body.columnId, body);
   }
 
