@@ -6,6 +6,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from '../services/users.service.js';
 import { User } from '../entities/user.entity.js';
@@ -20,6 +21,10 @@ import { CreateUserDto } from '../dto/create-user.dto.js';
 import { CreateColumnDto } from '../../columns/dto/create-column.dto.js';
 import { CreateCardDto } from '../../cards/dto/create-card.dto.js';
 import { CreateCommentDto } from '../../comments/dto/create-comment.dto.js';
+import { IsUserOwner } from '../guards/is-user-owner.guard.js';
+import { IsColumnOwner } from '../../columns/guards/is-column-owner.guard.js';
+import { IsCardOwner } from '../../cards/guards/is-card-owner.guard.js';
+import { IsCommentOwner } from '../../comments/guards/is-comment-owner.guard.js';
 
 @Controller('users')
 export class UsersWriteController {
@@ -33,6 +38,7 @@ export class UsersWriteController {
   }
 
   @Post(':userId/columns')
+  @UseGuards(IsUserOwner)
   async createColumnForUser(
     @Param('userId', ParseUUIDPipe) userId: string,
     @Body() body: CreateColumnDto,
@@ -66,7 +72,8 @@ export class UsersWriteController {
 
   // Update
   // ---------------------------------------------------------------------------
-  @Patch()
+  @Patch(':userId')
+  @UseGuards(IsUserOwner)
   async updateUser(
     @Param('userId', ParseUUIDPipe) userId: string,
     @Body() body: UpdateUserDto,
@@ -75,6 +82,7 @@ export class UsersWriteController {
   }
 
   @Patch(':userId/columns/:columnId')
+  @UseGuards(IsColumnOwner)
   async updateColumnForUser(
     @Param('userId', ParseUUIDPipe) userId: string,
     @Param('columnId', ParseUUIDPipe) columnId: string,
@@ -84,6 +92,7 @@ export class UsersWriteController {
   }
 
   @Patch(':userId/columns/:columnId/cards/:cardId')
+  @UseGuards(IsCardOwner)
   async updateCardForUserColumn(
     @Param('userId', ParseUUIDPipe) userId: string,
     @Param('columnId', ParseUUIDPipe) columnId: string,
@@ -99,6 +108,7 @@ export class UsersWriteController {
   }
 
   @Patch(':userId/columns/:columnId/cards/:cardId/comments/:commentId')
+  @UseGuards(IsCommentOwner)
   async updateCommentForUserCard(
     @Param('userId', ParseUUIDPipe) userId: string,
     @Param('columnId', ParseUUIDPipe) columnId: string,
@@ -118,6 +128,7 @@ export class UsersWriteController {
   // Delete
   // ---------------------------------------------------------------------------
   @Delete(':userId')
+  @UseGuards(IsUserOwner)
   async deleteUser(
     @Param('userId', ParseUUIDPipe) userId: string,
   ): Promise<void> {
@@ -125,6 +136,7 @@ export class UsersWriteController {
   }
 
   @Delete(':userId/columns/:columnId')
+  @UseGuards(IsColumnOwner)
   async deleteColumnForUser(
     @Param('userId', ParseUUIDPipe) userId: string,
     @Param('columnId', ParseUUIDPipe) columnId: string,
@@ -133,6 +145,7 @@ export class UsersWriteController {
   }
 
   @Delete(':userId/columns/:columnId/cards/:cardId')
+  @UseGuards(IsCardOwner)
   async deleteCardForUserColumn(
     @Param('userId', ParseUUIDPipe) userId: string,
     @Param('columnId', ParseUUIDPipe) columnId: string,
@@ -142,6 +155,7 @@ export class UsersWriteController {
   }
 
   @Delete(':userId/columns/:columnId/cards/:cardId/comments/:commentId')
+  @UseGuards(IsCommentOwner)
   async deleteCommentForUserCard(
     @Param('userId', ParseUUIDPipe) userId: string,
     @Param('columnId', ParseUUIDPipe) columnId: string,

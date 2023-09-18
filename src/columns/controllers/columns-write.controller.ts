@@ -6,6 +6,7 @@ import {
   ParseUUIDPipe,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { Column } from '../entities/column.entity.js';
 import { GetCurrentUser } from '../../common/decorators/get-current-user.decorator.js';
@@ -19,6 +20,9 @@ import { UpdateCommentDto } from '../../comments/dto/update-comment.dto.js';
 import { Comment } from '../../comments/entities/comment.entity.js';
 import { CreateCardDto } from '../../cards/dto/create-card.dto.js';
 import { CreateCommentDto } from '../../comments/dto/create-comment.dto.js';
+import { IsColumnOwner } from '../guards/is-column-owner.guard.js';
+import { IsCardOwner } from '../../cards/guards/is-card-owner.guard.js';
+import { IsCommentOwner } from '../../comments/guards/is-comment-owner.guard.js';
 
 @Controller('columns')
 export class ColumnsWriteController {
@@ -34,26 +38,29 @@ export class ColumnsWriteController {
     return this.columnsService.create(id, body);
   }
 
-  @Post(':columnId')
+  @Post(':columnId/cards')
   async createCardForColumn(
+    @GetCurrentUser() { id }: UserFromJwt,
     @Param('columnId', ParseUUIDPipe) columnId: string,
     @Body() body: CreateCardDto,
   ): Promise<Card> {
-    return this.columnsService.createCardForColumn(columnId, body);
+    return this.columnsService.createCardForColumn(id, columnId, body);
   }
 
-  @Post(':columnId/cards/:cardId')
+  @Post(':columnId/cards/:cardId/comments')
   async createCommentForCard(
+    @GetCurrentUser() { id }: UserFromJwt,
     @Param('columnId', ParseUUIDPipe) columnId: string,
     @Param('cardId', ParseUUIDPipe) cardId: string,
     @Body() body: CreateCommentDto,
   ): Promise<Comment> {
-    return this.columnsService.createCommentForCard(columnId, cardId, body);
+    return this.columnsService.createCommentForCard(id, columnId, cardId, body);
   }
 
   // Update
   // ---------------------------------------------------------------------------
   @Patch(':columnId')
+  @UseGuards(IsColumnOwner)
   async updateColumn(
     @Param('columnId', ParseUUIDPipe) columnId: string,
     @Body() body: UpdateColumnDto,
@@ -62,6 +69,7 @@ export class ColumnsWriteController {
   }
 
   @Patch(':columnId/cards/:cardId')
+  @UseGuards(IsCardOwner)
   async updateCardForColumn(
     @Param('columnId', ParseUUIDPipe) columnId: string,
     @Param('cardId', ParseUUIDPipe) cardId: string,
@@ -71,6 +79,7 @@ export class ColumnsWriteController {
   }
 
   @Patch(':columnId/cards/:cardId/comments/:commentId')
+  @UseGuards(IsCommentOwner)
   async updateCommentForCard(
     @Param('columnId', ParseUUIDPipe) columnId: string,
     @Param('cardId', ParseUUIDPipe) cardId: string,
@@ -88,6 +97,7 @@ export class ColumnsWriteController {
   // Delete
   // ---------------------------------------------------------------------------
   @Delete(':columnId')
+  @UseGuards(IsColumnOwner)
   async deleteColumn(
     @Param('columnId', ParseUUIDPipe) columnId: string,
   ): Promise<void> {
@@ -95,6 +105,7 @@ export class ColumnsWriteController {
   }
 
   @Delete(':columnId/cards/:cardId')
+  @UseGuards(IsCardOwner)
   async deleteCardForColumn(
     @Param('columnId', ParseUUIDPipe) columnId: string,
     @Param('cardId', ParseUUIDPipe) cardId: string,
@@ -103,6 +114,7 @@ export class ColumnsWriteController {
   }
 
   @Delete(':columnId/cards/:cardId/comments/:commentId')
+  @UseGuards(IsCommentOwner)
   async deleteCommentForCard(
     @Param('columnId', ParseUUIDPipe) columnId: string,
     @Param('cardId', ParseUUIDPipe) cardId: string,

@@ -10,7 +10,6 @@ import { UpdateColumnDto } from '../dto/update-column.dto.js';
 import { Card } from '../../cards/entities/card.entity.js';
 import { CardsService } from '../../cards/services/cards.service.js';
 import { Comment } from '../../comments/entities/comment.entity.js';
-import { CommentsService } from '../../comments/services/comments.service.js';
 import { UpdateCardDto } from '../../cards/dto/update-card.dto.js';
 import { UpdateCommentDto } from '../../comments/dto/update-comment.dto.js';
 import { CreateCardDto } from '../../cards/dto/create-card.dto.js';
@@ -22,14 +21,12 @@ export class ColumnsService {
     @InjectRepository(Column)
     private readonly columnsRepository: Repository<Column>,
     private readonly cardsService: CardsService,
-    private readonly commentsService: CommentsService,
   ) {}
 
   //-------------------------------------------------------------------
   public async findOneFor(options: Partial<Column>): Promise<Column> {
     const column = await this.columnsRepository.findOne({
       where: options,
-      relations: { cards: true },
     });
 
     if (!column) {
@@ -39,8 +36,22 @@ export class ColumnsService {
     return column;
   }
 
-  //-------------------------------------------------------------------
+  //-----------------------------------------------------------------------
+  public async isOwner(ownerId: string, columnId: string): Promise<boolean> {
+    const column = await this.columnsRepository.findOne({
+      where: { id: columnId, userId: ownerId },
+    });
+
+    return !!column;
+  }
+
+  //-----------------------------------------------------------------------
   public async find(userId: string): Promise<Column[]> {
+    return this.columnsRepository.find({ where: { userId: userId } });
+  }
+
+  //-------------------------------------------------------------------
+  public async getManyColumns(userId: string): Promise<Column[]> {
     return this.columnsRepository.find({ where: { userId: userId } });
   }
 
@@ -56,14 +67,16 @@ export class ColumnsService {
 
   //-------------------------------------------------------------------
   public async createCardForColumn(
+    userId: string,
     columnId: string,
     body: CreateCardDto,
   ): Promise<Card> {
-    return this.cardsService.create(columnId, body);
+    return this.cardsService.create(userId, columnId, body);
   }
 
   //-------------------------------------------------------------------
   public async createCommentForCard(
+    userId: string,
     columnId: string,
     cardId: string,
     body: CreateCommentDto,
@@ -72,7 +85,8 @@ export class ColumnsService {
       id: cardId,
       columnId: columnId,
     });
-    return this.commentsService.create(card.id, body);
+
+    return this.cardsService.createCommentForCard(userId, card.id, body);
   }
 
   //-------------------------------------------------------------------
@@ -96,8 +110,7 @@ export class ColumnsService {
 
   //-------------------------------------------------------------------
   public async getManyCardsForColumn(columnId: string): Promise<Card[]> {
-    const column = await this.findOneFor({ id: columnId });
-    return column.cards;
+    return this.cardsService.find(columnId);
   }
 
   //------------------------------------------------------------------
@@ -118,7 +131,7 @@ export class ColumnsService {
       columnId: columnId,
     });
 
-    return card.comments;
+    return this.cardsService.getManyCommentsForCard(card.id);
   }
 
   //------------------------------------------------------------------
@@ -132,7 +145,7 @@ export class ColumnsService {
       columnId: columnId,
     });
 
-    return this.commentsService.findOneFor({ id: commentId, cardId: card.id });
+    return this.cardsService.getOneCommentForCard(card.id, commentId);
   }
 
   //------------------------------------------------------------------
@@ -161,12 +174,7 @@ export class ColumnsService {
       columnId: columnId,
     });
 
-    const comment = await this.commentsService.findOneFor({
-      id: commentId,
-      cardId: card.id,
-    });
-
-    return this.commentsService.update(comment.id, body);
+    return this.cardsService.updateCommentForCard(card.id, commentId, body);
   }
 
   //------------------------------------------------------------------
@@ -193,11 +201,6 @@ export class ColumnsService {
       columnId: columnId,
     });
 
-    const comment = await this.commentsService.findOneFor({
-      id: commentId,
-      cardId: card.id,
-    });
-
-    return this.commentsService.delete(comment.id);
+    return this.cardsService.deleteCommentForCard(card.id, commentId);
   }
 }

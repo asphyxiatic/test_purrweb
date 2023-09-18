@@ -7,6 +7,7 @@ import { ColumnsModule } from '../columns/columns.module.js';
 import { CardsModule } from '../cards/cards.module.js';
 import { CommentsModule } from '../comments/comments.module.js';
 import { UsersReadContoller } from './controllers/users-read.controller.js';
+import { IsUserOwner } from './guards/is-user-owner.guard.js';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { UsersReadContoller } from './controllers/users-read.controller.js';
     CommentsModule,
   ],
   controllers: [UsersWriteController, UsersReadContoller],
-  providers: [UsersService],
-  exports: [UsersService],
+  providers: [UsersService, IsUserOwner],
+  exports: [UsersService, IsUserOwner],
 })
 export class UsersModule {}

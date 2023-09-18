@@ -4,6 +4,8 @@ import { User } from '../entities/user.entity.js';
 import { Column } from '../../columns/entities/column.entity.js';
 import { Card } from '../../cards/entities/card.entity.js';
 import { Comment } from '../../comments/entities/comment.entity.js';
+import { GetCurrentUser } from '../../common/decorators/get-current-user.decorator.js';
+import { UserFromJwt } from '../../auth/interfaces/user-from-jwt.interface.js';
 
 @Controller('users')
 export class UsersReadContoller {
@@ -14,6 +16,11 @@ export class UsersReadContoller {
   @Get()
   async getManyUsers(): Promise<User[]> {
     return this.usersService.getManyUsers();
+  }
+
+  @Get('me')
+  async getCurrentUser(@GetCurrentUser() { id }: UserFromJwt) {
+    return this.usersService.getOneUser(id);
   }
 
   @Get(':userId')

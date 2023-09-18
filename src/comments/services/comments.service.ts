@@ -18,7 +18,9 @@ export class CommentsService {
 
   //-----------------------------------------------------------------------
   public async findOneFor(options: Partial<Comment>): Promise<Comment> {
-    const comment = await this.commentsRepository.findOne({ where: options });
+    const comment = await this.commentsRepository.findOne({
+      where: options,
+    });
 
     if (!comment) {
       throw new NotFoundException('🚨 column not found!');
@@ -28,16 +30,35 @@ export class CommentsService {
   }
 
   //-----------------------------------------------------------------------
+  public async isOwner(ownerId: string, commentId: string): Promise<boolean> {
+    const comment = await this.commentsRepository.findOne({
+      where: { id: commentId, userId: ownerId },
+    });
+
+    return !!comment;
+  }
+
+  //-----------------------------------------------------------------------
+  public async find(cardId: string): Promise<Comment[]> {
+    return this.commentsRepository.find({ where: { cardId: cardId } });
+  }
+
+  //-----------------------------------------------------------------------
   public async getOneComment(commentId: string): Promise<Comment> {
     return this.findOneFor({ id: commentId });
   }
 
   //-----------------------------------------------------------------------
   public async create(
+    userId: string,
     cardId: string,
     body: CreateCommentDto,
   ): Promise<Comment> {
-    return this.commentsRepository.save({ cardId: cardId, ...body });
+    return this.commentsRepository.save({
+      cardId: cardId,
+      userId: userId,
+      ...body,
+    });
   }
 
   //-----------------------------------------------------------------------

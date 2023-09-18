@@ -25,7 +25,6 @@ export class CardsService {
   public async findOneFor(options: Partial<Card>): Promise<Card> {
     const card = await this.cardRepository.findOne({
       where: options,
-      relations: { comments: true },
     });
 
     if (!card) {
@@ -35,14 +34,36 @@ export class CardsService {
     return card;
   }
 
+  //-----------------------------------------------------------------------
+  public async isOwner(ownerId: string, cardId: string): Promise<boolean> {
+    const card = await this.cardRepository.findOne({
+      where: { id: cardId, userId: ownerId },
+    });
+
+    return !!card;
+  }
+
+  //-------------------------------------------------------------------
+  public async find(columnId: string): Promise<Card[]> {
+    return this.cardRepository.find({ where: { columnId: columnId } });
+  }
+
   //-------------------------------------------------------------------
   public async getOneCard(cardId: string): Promise<Card> {
     return this.findOneFor({ id: cardId });
   }
 
   //-------------------------------------------------------------------
-  public async create(columnId: string, body: CreateCardDto): Promise<Card> {
-    return this.cardRepository.save({ columnId: columnId, ...body });
+  public async create(
+    userId: string,
+    columnId: string,
+    body: CreateCardDto,
+  ): Promise<Card> {
+    return this.cardRepository.save({
+      columnId: columnId,
+      userId: userId,
+      ...body,
+    });
   }
 
   //-------------------------------------------------------------------
@@ -64,21 +85,30 @@ export class CardsService {
     }
   }
 
+  public async deleteCommentForCard(
+    cardId: string,
+    commentId: string,
+  ): Promise<void> {
+    const comment = await this.commentsService.findOneFor({
+      id: commentId,
+      cardId: cardId,
+    });
+
+    return this.commentsService.delete(comment.id);
+  }
+
   //------------------------------------------------------------------
   public async createCommentForCard(
+    userId: string,
     cardId: string,
     body: CreateCommentDto,
   ): Promise<Comment> {
-    return this.commentsService.create(cardId, body);
+    return this.commentsService.create(userId, cardId, body);
   }
 
   //------------------------------------------------------------------
   public async getManyCommentsForCard(cardId: string): Promise<Comment[]> {
-    const card = await this.findOneFor({
-      id: cardId,
-    });
-
-    return card.comments;
+    return this.commentsService.find(cardId);
   }
 
   //------------------------------------------------------------------

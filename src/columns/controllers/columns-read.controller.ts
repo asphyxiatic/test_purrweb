@@ -16,7 +16,7 @@ export class ColumnsReadController {
   async getManyColumns(
     @GetCurrentUser() { id }: UserFromJwt,
   ): Promise<Column[]> {
-    return this.columnsService.find(id);
+    return this.columnsService.getManyColumns(id);
   }
 
   @Get(':columnId')

@@ -6,11 +6,12 @@ import { ColumnsWriteController } from './controllers/columns-write.controller.j
 import { CardsModule } from '../cards/cards.module.js';
 import { CommentsModule } from '../comments/comments.module.js';
 import { ColumnsReadController } from './controllers/columns-read.controller.js';
+import { IsColumnOwner } from './guards/is-column-owner.guard.js';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Column]), CardsModule, CommentsModule],
   controllers: [ColumnsWriteController, ColumnsReadController],
-  providers: [ColumnsService],
-  exports: [ColumnsService],
+  providers: [ColumnsService, IsColumnOwner],
+  exports: [ColumnsService, IsColumnOwner],
 })
 export class ColumnsModule {}

@@ -52,7 +52,7 @@ export class AuthService {
     const accessToken = await this.jwtToolsService.createToken(
       atPayload,
       this.JWT_ACCESS_SECRET_KEY,
-      '5m',
+      '60m',
     );
 
     return { token: accessToken };
