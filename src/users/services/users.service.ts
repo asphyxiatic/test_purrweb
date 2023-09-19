@@ -188,9 +188,12 @@ export class UsersService {
       throw new NotFoundException('🚨 user not found!');
     }
 
+    const hashedPassword = bcrypt.hashSync(body.password, this.saltRounds);
+
     return this.userRepository.save({
       id: user.id,
       ...body,
+      password: hashedPassword,
     });
   }
 
